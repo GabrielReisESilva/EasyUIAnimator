@@ -1,0 +1,121 @@
+THANKS FOR DOWNLOADING!
+
+How to configure:
+1. Create new game object in your scene
+2. Add Scripts > UIAnimator to it
+3. Have fun!
+
+///////////////////////////////IMPORTANT/////////////////////////////
+1. All values are set in screen proportion, if you want to move to the center of the screen the target must be Vector2(0.5f,0.5f).
+2. You can Play(),Pause() and Stop() your animations.
+3. You can do things like:
+	UIAnimator.Move(r,o,t,d).SetModifier(m).SetEffect.(e).SetDelay(de).Play();
+4. You can save the instance of a animation to play again, but keep in mind it will keep the values used in the first time.
+5. If you liked it, rate the asset and comment, it will make me REALLY happy :)
+6. If you want to contribute, report an issue or just see the code go to https://github.com/GabrielReisESilva/EasyUIAnimator
+7. There might be some bug in the code, if you find one, please report or help me to fix it :)
+
+How to use:
+1. Add "using EasyUIAnimator;"
+///////////////////////////////ANIMATE/////////////////////////////
+- MOVE
+	1. UIAnimation anim = UIAnimator.Move(rectTransform,Vector2 origin,Vector2 target,float duration);
+	2. anim.Play();
+- SCALE
+	1. UIAnimation anim = UIAnimator.Scale(rectTransform,Vector3 origin,Vector3 target,float duration);
+	2. anim.Play();
+- ROTATE
+	1.a UIAnimation anim = UIAnimator.Rotate(rectTransform,Quaternion origin,Quaternion target,float duration);
+	1.b UIAnimation anim = UIAnimator.Rotate(rectTransform,float originAngle,float targetAngle,float duration);
+	2. anim.Play();
+	NOTE: 1.b is unclamped, it is not limited to 360 degrees
+- COLOR
+	1. UIAnimation anim = UIAnimator.ChangeColor(image,Color origin,Color target,float duration);
+	2. anim.Play();
+
+Other functions:
+- MOVE TO: 				From (current position) to (Vector2 target)
+- MOVE HORIZONTAL: 		From (float origin) to (float target) with fixed y
+- MOVE HORIZONTAL TO: 	From (current position) to (float target) with fixed y
+- MOVE HORIZONTAL: 		From (float origin) to (float target) with fixed x
+- MOVE HORIZONTAL TO: 	From (current position) to (float target) with fixed x
+- MOVE OFFSET: 			From (current position) to (current position + Vector2 offset)
+
+- MOVE BEZIER:			UIAnimator.MoveBezier(rect, startValue, finalValue, bezierP1, bezierP2(optional), duration)
+	- P1 and P2 are in screen proportion. (0,0) -> bottom left, (1,1) -> top right
+	- Use it with ParallelAnim to have a visual feedback of the movement
+
+- also: SCALE TO, SCALE OFFSET, ROTATE TO, ROTATE OFFSET, COLOR TO, FADE IN, FADE OUT
+
+///////////////////////////////DELAY/////////////////////////////
+- Add delay
+	1. anim.SetDelay(float delay)
+
+///////////////////////////////MODIFIER/////////////////////////////
+- Modifiers change the animation progress curve
+- default(LINEAR)
+
+- (MOD)
+	1. anim.SetModifier(Modifier.MOD)
+
+Modifiers:
+- LINEAR,
+- QUAD IN
+- QUAD OUT
+- CUB IN
+- CUB OUT
+- POLY IN
+- POLY OUT
+- SIN
+- TAN
+- CIRCULAR IN
+- CIRCULAR OUT
+
+///////////////////////////////EFFECT/////////////////////////////
+- default(NO EFFECT)
+
+- SPRING
+	1. anim.SetEffect(Effect.Spring(float max, int bounce), Quaternion rotation);
+- WAVE
+	1. anim.SetEffect(Effect.Spring(float max, int bounce), Quaternion rotation);
+- EXPLOSION
+	1. anim.SetEffect(Effect.Spring(float max);
+
+max 	: max amplitude (percent of screen height)
+bounce 	: number of bounces (1 = half wave, 2 = full wave, ...)
+rotation: effect rotation
+
+///////////////////////////////CALLBACK/////////////////////////////
+- The callback is called when the animation ends
+- Add Callback
+	1. anim.SetCallback(AnimationCallback callback);
+
+AnimationCallback: void AnimationCallback()
+
+///////////////////////////////LOOP/////////////////////////////
+- Loop makes your animation repeats after finished
+- Add Loop
+	1. anim.SetLoop(bool pingPong);
+
+PingPong: your animation will start from end to beginning
+
+///////////////////////////////MISC/////////////////////////////
+- uiAnimation.REVERSE
+	Reverse is used to switch the startValue and finalValue.
+	It is recommended to be used only when the animation is not playing
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<UI FIXED ANIMATION CLASS>>>>>>>>>>>>>>>>>>>>>>>>>
+- It allows you to test your animations from Inspector
+- How to use:
+	1. Add the UIFixedAnimation component to your RectTransform
+	2. Configure you animation
+	3. Press the Play button in the Inspector
+- You can also play the reverse animation by calling uiFixedAnimation.PlayReverseAnimation()
+- Both Play and PlayReverse can be assigned to a button callback
+- Use Screen Value: Use screen pixels value instead of percent
+- Play on Start: Plays animation on Start
+
+- IMPORTANT: It is necessary to have a UIAnimator attached to any gameObject in the scene
+
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<UI PARALLEL ANIMATION CLASS>>>>>>>>>>>>>>>>>>>>>>>>>
+- Parallel animations are similar to Fixed Animations, but allows you to add other types of animation to the same object
