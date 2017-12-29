@@ -30,7 +30,6 @@ public class UIParallelAnimationEditor : Editor
             }
             else
             {
-
                 parallelAnim.moveModifier = (Modifiers)EditorGUILayout.EnumPopup("Modifier", parallelAnim.moveModifier);
                 parallelAnim.moveEffect = (Effects)EditorGUILayout.EnumPopup("Effect", parallelAnim.moveEffect);
                 if (parallelAnim.moveEffect != Effects.NONE)
@@ -120,6 +119,8 @@ public class UIParallelAnimationEditor : Editor
         parallelAnim.delay          = EditorGUILayout.FloatField("Delay", parallelAnim.delay);
         parallelAnim.duration       = EditorGUILayout.FloatField("Duration", parallelAnim.duration);
         parallelAnim.playOnStart    = EditorGUILayout.Toggle("Play On Start", parallelAnim.playOnStart);
+        parallelAnim.playOnEnable   = EditorGUILayout.Toggle("Play On Enable", parallelAnim.playOnEnable);
+        parallelAnim.playAudioOnPlay = EditorGUILayout.Toggle("Play Audio On Animation Start", parallelAnim.playAudioOnPlay);
         if (GUILayout.Button("Play"))
             parallelAnim.PlayReverse();
     }

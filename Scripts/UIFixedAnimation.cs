@@ -45,6 +45,8 @@ public class UIFixedAnimation : MonoBehaviour {
     public bool randomDirection;
     public bool disableAfter;
     public bool playOnStart;
+    public bool playOnEnable;
+    public bool playAudioOnPlay;
     public float duration = 1;
     public float delay;
     public float max = 0.2f;
@@ -57,6 +59,7 @@ public class UIFixedAnimation : MonoBehaviour {
     private UIAnimation uiAnimation;
     private RectTransform rect;
     private Graphic image;
+    private AudioSource audioSource;
     
     public UIAnimation UIAnimation { get { return uiAnimation; } }
 
@@ -123,9 +126,23 @@ public class UIFixedAnimation : MonoBehaviour {
                 break;
         }
 
-        if(disableAfter) uiAnimation.SetCallback(() => { gameObject.SetActive(false); });
+        if (playAudioOnPlay)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                Debug.LogError("No audio source found!");
+        }
+
+        if (disableAfter) uiAnimation.SetCallback(() => { gameObject.SetActive(false); });
         if (Application.isPlaying)
             if (playOnStart) Play();
+    }
+
+    private void OnEnable()
+    {
+        if (playOnEnable)
+            if (uiAnimation != null)
+                Play();
     }
 
     /*  Play

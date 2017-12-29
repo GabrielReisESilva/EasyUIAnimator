@@ -43,6 +43,8 @@ public class UIParallelAnimation : MonoBehaviour {
     public bool isCubicBezier;
     public bool useScreenValues;
     public bool playOnStart;
+    public bool playOnEnable;
+    public bool playAudioOnPlay;
     public bool randomDirection;
     public bool disableAfter;
     public Vector3[] start = new Vector3[3];
@@ -67,8 +69,9 @@ public class UIParallelAnimation : MonoBehaviour {
     private UIAnimation uiAnimation;
     private RectTransform rect;
     private Graphic image;
+    private AudioSource audioSource;
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         if (Application.isPlaying && uiAnimation != null) return;
 
@@ -77,14 +80,14 @@ public class UIParallelAnimation : MonoBehaviour {
         List<UIAnimation> animations = new List<UIAnimation>();
         if (moveAnimation)
         {
-            UpdateBehaviour mod     = EasyUIAnimatorUtils.GetModifier(moveModifier);
+            UpdateBehaviour mod = EasyUIAnimatorUtils.GetModifier(moveModifier);
             Effect.EffectUpdate eff = EasyUIAnimatorUtils.GetEffect(moveEffect, max[0], bounce[0]);
             effectRotation = (randomDirection) ? Vector3.forward * Random.Range(0, 360) : effectRotation;
             Vector2 startValue = (useScreenValues) ? Vector3.Scale(start[0], (Vector3)UIAnimator.InvertedScreenDimension) : start[0];
             Vector2 finalValue = (useScreenValues) ? Vector3.Scale(final[0], (Vector3)UIAnimator.InvertedScreenDimension) : final[0];
             if (isBezier)
             {
-                if(isCubicBezier)
+                if (isCubicBezier)
                     animations.Add(UIAnimator.MoveBezier(rect, startValue, finalValue, bezierP1, bezierP2, duration));
                 else
                     animations.Add(UIAnimator.MoveBezier(rect, startValue, finalValue, bezierP1, duration));
@@ -96,13 +99,13 @@ public class UIParallelAnimation : MonoBehaviour {
         }
         if (scaleAnimation)
         {
-            UpdateBehaviour mod     = EasyUIAnimatorUtils.GetModifier(scaleModifier);
+            UpdateBehaviour mod = EasyUIAnimatorUtils.GetModifier(scaleModifier);
             Effect.EffectUpdate eff = EasyUIAnimatorUtils.GetEffect(scaleEffect, max[1], bounce[1]);
             animations.Add(UIAnimator.Scale(rect, start[1], final[1], duration).SetModifier(mod).SetEffect(eff));
         }
         if (rotationAnimation)
         {
-            UpdateBehaviour mod     = EasyUIAnimatorUtils.GetModifier(rotationModifier);
+            UpdateBehaviour mod = EasyUIAnimatorUtils.GetModifier(rotationModifier);
             Effect.EffectUpdate eff = EasyUIAnimatorUtils.GetEffect(rotationEffect, max[2], bounce[2]);
             if (start[2].x != 0 || start[2].y != 0 || final[2].x != 0 || final[2].y != 0)
                 animations.Add(UIAnimator.Rotate(rect, Quaternion.Euler(start[2]), Quaternion.Euler(final[2]), duration).SetModifier(mod).SetEffect(eff));
@@ -139,9 +142,23 @@ public class UIParallelAnimation : MonoBehaviour {
                 break;
         }
 
+        if (playAudioOnPlay)
+        {
+            audioSource = GetComponent<AudioSource>();
+            if (audioSource == null)
+                Debug.LogError("No audio source found!");
+        }
+
         if (disableAfter) uiAnimation.SetCallback(() => { gameObject.SetActive(false); });
         if (Application.isPlaying)
             if (playOnStart) Play();
+    }
+
+    private void OnEnable()
+    {
+        if(playOnEnable)
+            if(uiAnimation != null)
+                Play();
     }
 
     /*  Play
@@ -164,6 +181,7 @@ public class UIParallelAnimation : MonoBehaviour {
                 EditorApplication.update = EditorUpdate;
             }
         }
+        if (playAudioOnPlay) audioSource.Play();
 #else
         if (uiAnimation == null) Start();
         uiAnimation.Play();

@@ -78,7 +78,9 @@ public class UIFixedAnimationEditor : Editor {
             }
         }
 
-        fixedAnim.playOnStart = EditorGUILayout.Toggle("Play On Start", fixedAnim.playOnStart);
+        fixedAnim.playOnStart  = EditorGUILayout.Toggle("Play On Start", fixedAnim.playOnStart);
+        fixedAnim.playOnEnable = EditorGUILayout.Toggle("Play On Enable", fixedAnim.playOnEnable);
+        fixedAnim.playAudioOnPlay = EditorGUILayout.Toggle("Play Audio On Animation Start", fixedAnim.playAudioOnPlay);
         if (GUILayout.Button("Play"))
             fixedAnim.Play();
     }
