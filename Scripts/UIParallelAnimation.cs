@@ -166,6 +166,13 @@ public class UIParallelAnimation : MonoBehaviour {
                 Play();
     }
 
+    private void OnDisable()
+    {
+        if (playOnEnable)
+            if (uiAnimation != null)
+                uiAnimation.Stop();
+    }
+
     /*  Play
      *      Play the animation.
      *      If you play in Edit Mode, it updates using the EditorApplication
