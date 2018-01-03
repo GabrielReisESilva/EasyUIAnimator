@@ -76,6 +76,11 @@ public class UIParallelAnimation : MonoBehaviour {
         if (Application.isPlaying && uiAnimation != null) return;
 
         rect = GetComponent<RectTransform>();
+        if (rect == null)
+        {
+            Debug.Log("Please add a RectTransform to this object:" + gameObject.name);
+            return;
+        }
 
         List<UIAnimation> animations = new List<UIAnimation>();
         if (moveAnimation)

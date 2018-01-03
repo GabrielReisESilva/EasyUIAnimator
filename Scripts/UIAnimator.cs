@@ -62,8 +62,13 @@ namespace EasyUIAnimator
 				instance = this;
 				animations = new List<UIAnimation>();
 				removeList = new List<UIAnimation>();
-                screenDimension = new Vector2(Screen.width, Screen.height);
-                invertedScreenDimension = new Vector2(1f / Screen.width, 1f / Screen.height);
+                try{
+                    RectTransform canvasRect = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
+                    screenDimension = new Vector2(canvasRect.rect.width, canvasRect.rect.height);//new Vector2(Screen.width, Screen.height);
+                    invertedScreenDimension = new Vector2(1f / screenDimension.x, 1f / screenDimension.y);
+                } catch (System.NullReferenceException){
+                    Debug.Log("Please, add a Canvas to your scene");
+                }
             }
 		}
 
@@ -78,8 +83,15 @@ namespace EasyUIAnimator
                 Awake();
             if (!Application.isPlaying)
             {
-                screenDimension = new Vector2(Screen.width, Screen.height);
-                invertedScreenDimension = new Vector2(1f / Screen.width, 1f / Screen.height);
+                try{
+                    RectTransform canvasRect = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
+                    screenDimension = new Vector2(canvasRect.rect.width, canvasRect.rect.height);//new Vector2(Screen.width, Screen.height);
+                    invertedScreenDimension = new Vector2(1f / screenDimension.x, 1f / screenDimension.y);
+                }
+                catch (System.NullReferenceException)
+                {
+                    Debug.Log("Please, add a Canvas to your scene");
+                }
             }
 #endif
             if (animations.Count > 0){
