@@ -44,10 +44,13 @@ namespace EasyUIAnimator
 		private List<UIAnimation> removeList;
 		private Vector2 screenDimension;
 		private Vector2 invertedScreenDimension;
+        private bool scaleWithScreen;
+        //private float canvasScale;
 
-		private static UIAnimator Instance 			    { get {return instance;} }
+        private static UIAnimator Instance 			    { get {return instance;} }
         public static Vector2 ScreenDimension           { get {return instance.screenDimension; } }
         public static Vector2 InvertedScreenDimension   { get {return instance.invertedScreenDimension; } }
+        public static bool ScaleWithScreen              { get {return instance.scaleWithScreen; } }
         public static List<UIAnimation> Animations 	    { get {return instance.animations;}}
 		#region UNITY
 
@@ -62,9 +65,11 @@ namespace EasyUIAnimator
 				instance = this;
 				animations = new List<UIAnimation>();
 				removeList = new List<UIAnimation>();
-                try{
+                try
+                {
                     RectTransform canvasRect = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
-                    screenDimension = new Vector2(canvasRect.rect.width, canvasRect.rect.height);//new Vector2(Screen.width, Screen.height);
+                    scaleWithScreen = FindObjectOfType<CanvasScaler>().uiScaleMode == CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                    screenDimension = /*new Vector2(canvasRect.rect.width, canvasRect.rect.height);//*/new Vector2(Screen.width, Screen.height);
                     invertedScreenDimension = new Vector2(1f / screenDimension.x, 1f / screenDimension.y);
                 } catch (System.NullReferenceException){
                     Debug.Log("Please, add a Canvas to your scene");
@@ -74,6 +79,7 @@ namespace EasyUIAnimator
 
 		void Start ()
         {
+            
         }
         
         void Update()
@@ -85,7 +91,7 @@ namespace EasyUIAnimator
             {
                 try{
                     RectTransform canvasRect = FindObjectOfType<Canvas>().GetComponent<RectTransform>();
-                    screenDimension = new Vector2(canvasRect.rect.width, canvasRect.rect.height);//new Vector2(Screen.width, Screen.height);
+                    screenDimension = /*new Vector2(canvasRect.rect.width, canvasRect.rect.height);//*/new Vector2(Screen.width, Screen.height);
                     invertedScreenDimension = new Vector2(1f / screenDimension.x, 1f / screenDimension.y);
                 }
                 catch (System.NullReferenceException)
@@ -525,12 +531,20 @@ namespace EasyUIAnimator
 		}
 
 		public UIPositionAnimation(RectTransform transform, Vector2 origin, Vector2 target, float duration){
-			this.transform 		= transform;
+            float canvasScale   = (UIAnimator.ScaleWithScreen) ? 1 / UIAnimator.FindObjectOfType<Canvas>().scaleFactor : 1;
+            this.transform 		= transform;
 			this.duration 		= duration < 0.0000001f ? 0.0000001f : duration;
-            this.originPosition = Vector2.Scale(origin,UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
-			this.targetPosition = Vector2.Scale(target,UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
+            this.originPosition = Vector2.Scale(origin, UIAnimator.ScreenDimension) * canvasScale - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
+            this.targetPosition = Vector2.Scale(target, UIAnimator.ScreenDimension) * canvasScale - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
 			updateBehaviour		= Modifier.Linear;
 			effectBehaviour		= Effect.NoEffect;
+            //DEBUG
+            
+            Debug.Log("Screen Dimention: " + UIAnimator.ScreenDimension);
+            Debug.Log("Canvas Scale: " + canvasScale);
+            Debug.Log("Origin: " + this.originPosition + " (" + Vector2.Scale(origin, UIAnimator.ScreenDimension) + " - " + (Vector2)transform.position + " + " + transform.anchoredPosition + ")");
+            Debug.Log("Target: " + this.targetPosition + " (" + Vector2.Scale(target, UIAnimator.ScreenDimension) + " - " + (Vector2)transform.position + " + " + transform.anchoredPosition + ")");
+            
         }
 
 		public override void OnUpdate (float timer){
@@ -567,24 +581,26 @@ namespace EasyUIAnimator
     {
         public UIBezierAnimation(RectTransform transform, Vector2 origin, Vector2 target, float duration, Vector2 p1, Vector2 p2) : base (transform,origin,target,duration)
         {
-            Vector2 mP0 = Vector2.Scale(origin, UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
-            Vector2 mP1 = Vector2.Scale(p1, UIAnimator.ScreenDimension)     - (Vector2)transform.position + transform.anchoredPosition;
-            Vector2 mP2 = Vector2.Scale(p2, UIAnimator.ScreenDimension)     - (Vector2)transform.position + transform.anchoredPosition;
-            Vector2 mP3 = Vector2.Scale(target, UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
+            float canvasScale = (UIAnimator.ScaleWithScreen) ? 1 / UIAnimator.FindObjectOfType<Canvas>().scaleFactor : 1;
+            Vector2 mP0 = Vector2.Scale(origin, UIAnimator.ScreenDimension) * canvasScale   - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
+            Vector2 mP1 = Vector2.Scale(p1, UIAnimator.ScreenDimension) * canvasScale       - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
+            Vector2 mP2 = Vector2.Scale(p2, UIAnimator.ScreenDimension) * canvasScale       - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
+            Vector2 mP3 = Vector2.Scale(target, UIAnimator.ScreenDimension) * canvasScale   - (Vector2)transform.position * canvasScale + transform.anchoredPosition;
             effectBehaviour = Effect.BezierEffectBehaviour(mP0, mP1, mP2, mP3);
         }
 
         public UIBezierAnimation(RectTransform transform, Vector2 origin, Vector2 target, float duration, Vector2 p1) : base(transform, origin, target, duration)
         {
-            Vector2 mP0 = Vector2.Scale(origin, UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
-            Vector2 mP1 = Vector2.Scale(p1, UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
-            Vector2 mP2 = Vector2.Scale(target, UIAnimator.ScreenDimension) - (Vector2)transform.position + transform.anchoredPosition;
+            float canvasScale = (UIAnimator.ScaleWithScreen) ? UIAnimator.FindObjectOfType<Canvas>().scaleFactor : 1;
+            Vector2 mP0 = Vector2.Scale(origin, UIAnimator.ScreenDimension) - (Vector2)transform.position / canvasScale + transform.anchoredPosition;
+            Vector2 mP1 = Vector2.Scale(p1, UIAnimator.ScreenDimension)     - (Vector2)transform.position / canvasScale + transform.anchoredPosition;
+            Vector2 mP2 = Vector2.Scale(target, UIAnimator.ScreenDimension) - (Vector2)transform.position / canvasScale + transform.anchoredPosition;
             effectBehaviour = Effect.BezierEffectBehaviour(mP0, mP1, mP2);
         }
 
         public override void OnUpdate(float timer)
         {
-            transform.anchoredPosition = effectBehaviour(timer);
+            transform.anchoredPosition = effectBehaviour(updateBehaviour(timer));
         }
     }
 

@@ -17,7 +17,7 @@ public class UIParallelAnimationEditor : Editor
             if (GUILayout.Button("- Move Animation", GUILayout.Height(30)))   parallelAnim.moveAnimation = false;
             if (GUILayout.Button("Use Current Value"))  UseCurrentValue(AnimationType.MOVE, parallelAnim);
             parallelAnim.start[0]           = EditorGUILayout.Vector3Field("Start Position", parallelAnim.start[0]);
-            parallelAnim.final[0]           = EditorGUILayout.Vector3Field("Final Position", parallelAnim.final[0]);
+            parallelAnim.final[0]           = EditorGUILayout.Vector3Field("Final Position", parallelAnim.final[0]).;
             parallelAnim.useScreenValues    = EditorGUILayout.Toggle("Use Screen Values", parallelAnim.useScreenValues);
             parallelAnim.isBezier           = EditorGUILayout.Toggle("Bézier Curve", parallelAnim.isBezier);
             if (parallelAnim.isBezier)
@@ -27,6 +27,8 @@ public class UIParallelAnimationEditor : Editor
                 parallelAnim.bezierP1 = EditorGUILayout.Vector2Field("P1", parallelAnim.bezierP1);
                 if(parallelAnim.isCubicBezier)
                     parallelAnim.bezierP2 = EditorGUILayout.Vector2Field("P2", parallelAnim.bezierP2);
+
+                parallelAnim.moveModifier = (Modifiers)EditorGUILayout.EnumPopup("Modifier", parallelAnim.moveModifier);
             }
             else
             {
