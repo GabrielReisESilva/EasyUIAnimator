@@ -249,7 +249,6 @@ public class UIParallelAnimation : MonoBehaviour {
         }
         if (moveAnimation)
         {
-            float scale = (UIAnimator.ScaleWithScreen) ? UIAnimator.FindObjectOfType<Canvas>().scaleFactor : 1;
             Gizmos.color = Color.blue;
             Vector3 screenStart = (useScreenValues) ? start[0] : Vector3.Scale(start[0], UIAnimator.ScreenDimension);
             Vector3 screenFinal = (useScreenValues) ? final[0] : Vector3.Scale(final[0], UIAnimator.ScreenDimension);
